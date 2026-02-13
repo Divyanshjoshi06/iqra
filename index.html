@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>For Iqra ❤️</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -181,7 +181,7 @@
   <div class="glow">Iqra ❤️</div>
   <div class="sub" style="margin-top:12px;">Loading something made just for you…</div>
   <div class="progress"><div class="bar" id="bar"></div></div>
-  <div class="small">Tap once anywhere when it opens — music will start 🎶</div>
+  <div class="small">Music starts when you press “Yes” 🎶</div>
 </div>
 
 <!-- Countdown overlay -->
@@ -203,7 +203,8 @@
       <div class="typeLine" id="typeLine"></div><span class="caret"></span>
     </div>
 
-    <button class="btn" onclick="show('collage')">Yes 💕</button>
+    <!-- MUSIC starts here on a real user click -->
+    <button class="btn" onclick="startMusic(); show('collage')">Yes 💕</button>
 
     <div class="arena">
       <button class="btn" id="no1">No 😜</button>
@@ -258,14 +259,15 @@
   </div>
 </div>
 
-<!-- Music -->
+<!-- Music (Rename file to audio/bgm.mp3) -->
 <audio id="bgm" preload="auto" loop playsinline>
-  <source src="audio/song.mp3" type="audio/mpeg">
+  <source src="./audio/bgm.mp3" type="audio/mpeg">
 </audio>
+
 <button class="musicBtn" id="musicBtn" onclick="toggleMusic()">🎶 Play</button>
 
 <script>
-/* Auto detect image base (root OR /images) */
+/* ---------- Auto detect image base (root OR /images) ---------- */
 const names={bg:"bg.jpg",c:["c1.jpg","c2.jpg","c3.jpg","c4.jpg"],s:["s1.jpg","s2.jpg","s3.jpg","s4.jpg"],final:"final.jpg"};
 let base="";
 
@@ -284,7 +286,7 @@ async function exists(path){
   document.getElementById("finalImg").src = base+names.final;
 })();
 
-/* Loader */
+/* ---------- Loader ---------- */
 let p=0;
 const interval=setInterval(()=>{
   p+=5;
@@ -297,7 +299,7 @@ const interval=setInterval(()=>{
   }
 },100);
 
-/* Hearts */
+/* ---------- Hearts ---------- */
 setInterval(()=>{
   const h=document.createElement("div");
   h.className="heart";
@@ -309,14 +311,14 @@ setInterval(()=>{
   setTimeout(()=>h.remove(),6500);
 },380);
 
-/* Navigation */
+/* ---------- Navigation ---------- */
 function show(id){
   document.querySelectorAll(".card").forEach(c=>c.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
-/* Runaway NO */
+/* ---------- Runaway NO ---------- */
 function run(btn){
   const move=()=>{
     btn.style.left=(10+Math.random()*70)+"%";
@@ -329,7 +331,7 @@ function run(btn){
 run(document.getElementById("no1"));
 run(document.getElementById("no2"));
 
-/* Slideshow */
+/* ---------- Slideshow ---------- */
 let si=0;
 setInterval(()=>{
   const img=document.getElementById("slider");
@@ -340,7 +342,7 @@ setInterval(()=>{
   setTimeout(()=>{ img.src=slides[si]; img.style.opacity=1; },250);
 },2500);
 
-/* Confetti */
+/* ---------- Confetti ---------- */
 function confetti(count=140){
   for(let i=0;i<count;i++){
     const c=document.createElement("div");
@@ -353,7 +355,7 @@ function confetti(count=140){
   }
 }
 
-/* Countdown then final */
+/* ---------- Countdown then final ---------- */
 function startCountdownThenFinal(){
   const overlay=document.getElementById("countdown");
   const num=document.getElementById("countNum");
@@ -377,13 +379,13 @@ function startCountdownThenFinal(){
   },900);
 }
 
-/* Yes click flow */
+/* ---------- Yes click flow ---------- */
 function yesClick(){
   confetti(160);
   startCountdownThenFinal();
 }
 
-/* Typewriter */
+/* ---------- Typewriter ---------- */
 const message =
 `Iqra,
 I don’t know how to explain it perfectly…
@@ -409,22 +411,27 @@ function startTypewriter(){
   })();
 }
 
-/* Music auto-start after first tap */
-let started=false;
-document.body.addEventListener("click",()=>{
-  if(!started){
-    const a=document.getElementById("bgm");
-    a.volume=0.85;
-    a.play().catch(()=>{});
-    started=true;
-    document.getElementById("musicBtn").innerText="⏸️ Pause";
+/* ---------- Music: start ONLY on user click (bulletproof) ---------- */
+function startMusic(){
+  const a=document.getElementById("bgm");
+  const btn=document.getElementById("musicBtn");
+  a.volume=0.9;
+  a.muted=false;
+  a.load();
+
+  const p=a.play();
+  if(p && p.catch){
+    p.then(()=>{ btn.innerText="⏸️ Pause"; })
+     .catch(()=>{ alert("Tap once anywhere on the page, then press Play again."); btn.innerText="🎶 Play"; });
+  }else{
+    btn.innerText="⏸️ Pause";
   }
-},{once:true});
+}
 
 function toggleMusic(){
   const a=document.getElementById("bgm");
   const b=document.getElementById("musicBtn");
-  if(a.paused){ a.play(); b.innerText="⏸️ Pause"; }
+  if(a.paused){ startMusic(); }
   else { a.pause(); b.innerText="🎶 Play"; }
 }
 </script>
